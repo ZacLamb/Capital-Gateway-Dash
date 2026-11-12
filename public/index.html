@@ -17,10 +17,23 @@
   --sky:#8fb8d8; --sky-bg:rgba(143,184,216,.12);
   --serif:'Instrument Serif',Georgia,serif; --sans:'Schibsted Grotesk',sans-serif; --mono:'IBM Plex Mono',monospace;
 }
+:root{--topbg:rgba(12,17,16,.82);--rest:#3c4b46;--grain:.035}
+.ring-bg{stroke:var(--line)}.ring-fg{stroke:var(--brass)}.ring-tx{fill:var(--ivory)}
+:root[data-theme="light"]{
+  --ink:#f5f1e8; --ink2:#ece6d8; --panel:#fffdf8; --panel2:#f6f1e6; --line:#e5ddcc; --line2:#d6ccb6;
+  --ivory:#18211e; --dim:#56635d; --faint:#87928c;
+  --brass:#a67c22; --brass2:#8a6516; --brass-bg:rgba(166,124,34,.12);
+  --good:#2b7a4b; --good-bg:rgba(43,122,75,.1); --warn:#a35f00; --warn-bg:rgba(163,95,0,.1);
+  --bad:#b4442f; --bad-bg:rgba(180,68,47,.1); --sky:#2c6a98; --sky-bg:rgba(44,106,152,.1);
+  --topbg:rgba(245,241,232,.86); --rest:#d9cfbb; --grain:.02}
+:root[data-theme="light"] body{background-image:radial-gradient(1200px 500px at 85% -10%,rgba(166,124,34,.10),transparent 60%)}
+:root[data-theme="light"] .panel,:root[data-theme="light"] .strip,:root[data-theme="light"] .health,:root[data-theme="light"] .card{box-shadow:0 1px 2px rgba(24,33,30,.04),0 8px 24px rgba(24,33,30,.05)}
+:root[data-theme="light"] .scrim{background:rgba(24,33,30,.35)}
+.theme{width:34px;height:34px;padding:0;display:grid;place-items:center}
 *{box-sizing:border-box} html,body{margin:0;min-height:100%}
 body{background:var(--ink);color:var(--ivory);font-family:var(--sans);font-size:14px;-webkit-font-smoothing:antialiased;
   background-image:radial-gradient(1200px 500px at 85% -10%,rgba(212,168,75,.09),transparent 60%),radial-gradient(900px 400px at -10% 0%,rgba(127,199,154,.05),transparent 60%)}
-body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.035;
+body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:var(--grain);
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 .num{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
 button{font:inherit;color:inherit;cursor:pointer;background:none;border:1px solid var(--line2);border-radius:999px;padding:7px 14px;transition:.15s}
@@ -31,7 +44,7 @@ select:focus,input:focus{border-color:var(--brass)}
 .eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);font-weight:600}
 
 /* top bar */
-.top{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:14px;padding:14px 32px;background:rgba(12,17,16,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:14px;padding:14px 32px;background:var(--topbg);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
 .mark{width:34px;height:34px;border:1px solid var(--brass);border-radius:50%;display:grid;place-items:center;font-family:var(--serif);font-size:17px;color:var(--brass2)}
 .brand{font-family:var(--serif);font-size:22px;letter-spacing:.01em}.brand i{color:var(--brass)}
 .sp{flex:1}
@@ -164,6 +177,11 @@ tr.mine td{background:rgba(212,168,75,.06)}
 <div id="app"></div>
 <div id="dw"><div class="scrim" id="scrim"></div><aside class="drawer" id="drawer"></aside></div>
 <script>
+const theme = () => document.documentElement.dataset.theme || 'dark';
+function setTheme(t) { document.documentElement.dataset.theme = t; try { localStorage.setItem('cg-theme', t); } catch {} }
+(() => { let t = null; try { t = localStorage.getItem('cg-theme'); } catch {}
+  const q = new URLSearchParams(location.search).get('theme');
+  setTheme(q || t || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')); })();
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const money = (n, d = 0) => n == null ? '—' : '$' + Number(n).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
@@ -210,10 +228,12 @@ function shell(inner) {
       ${owner && PAGE === 'book' ? `<div class="seg"><button data-v="" class="${AS ? '' : 'on'}">Owner</button><button data-v="rep" class="${AS ? 'on' : ''}">Rep view</button></div>
         ${AS || reps.length ? `<select id="as" ${AS ? '' : 'hidden'}>${reps.map((r) => `<option ${r === AS ? 'selected' : ''}>${esc(r)}</option>`).join('')}</select>` : ''}` : ''}
       ${owner ? "" : `<span class="who">${esc(ME.name)}</span>`}
+      <button id="theme" class="theme" title="Light / dark">${theme() === 'light' ? '☾' : '☀'}</button>
       <button id="ref" title="Pull latest from GHL">↻ Refresh</button>
       <button id="out">Sign out</button>
     </header><main>${inner}</main>`;
   $('#ref').onclick = () => load(true);
+  $('#theme').onclick = () => { setTheme(theme() === 'light' ? 'dark' : 'light'); render(); };
   $('#out').onclick = async () => { await fetch('/api/logout', { method: 'POST' }); ME = null; renderLogin(); };
   document.querySelectorAll('.seg button').forEach((b) => b.onclick = () => { AS = b.dataset.v ? (reps[0] || '') : ''; load(); });
   if ($('#as')) $('#as').onchange = (e) => { AS = e.target.value; load(); };
@@ -270,9 +290,9 @@ function ownerPage() {
       <div class="lede">${t.active} active · ${money(t.rtr)} owed back to funders · updated ${new Date(DATA.generatedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</div></div>
     <div class="health rise" ${st(1)}>
       <div class="row"><span class="eyebrow">Repayment health</span><span class="num" style="color:var(--brass2)">${Math.round(t.collected / base * 100)}% collected</span></div>
-      <div class="stack"><i data-w="${t.collected / base * 100}" style="background:var(--brass)"></i><i data-w="${perf / base * 100}" style="background:#3c4b46"></i><i data-w="${t.atRisk / base * 100}" style="background:var(--bad)"></i></div>
+      <div class="stack"><i data-w="${t.collected / base * 100}" style="background:var(--brass)"></i><i data-w="${perf / base * 100}" style="background:var(--rest)"></i><i data-w="${t.atRisk / base * 100}" style="background:var(--bad)"></i></div>
       <div class="legend"><div><span class="dot" style="background:var(--brass)"></span>Collected<b class="num">${money(t.collected)}</b></div>
-        <div><span class="dot" style="background:#3c4b46"></span>Outstanding<b class="num">${money(perf)}</b></div>
+        <div><span class="dot" style="background:var(--rest)"></span>Outstanding<b class="num">${money(perf)}</b></div>
         <div><span class="dot" style="background:var(--bad)"></span>At risk<b class="num">${money(t.atRisk)}</b></div></div>
     </div>
   </section>
@@ -380,9 +400,9 @@ function openDeal(id) {
     <h2>${esc(d.name)}</h2>${tag(c.status)}
     ${c.warnings.length ? `<p class="warnline" style="font-size:13px">⚠ ${c.warnings.map(esc).join(' · ')}</p>` : ''}
     <div class="sec"><div class="eyebrow">Repayment</div>
-      <div class="ring"><svg width="84" height="84" viewBox="0 0 84 84"><circle cx="42" cy="42" r="${R}" fill="none" stroke="#25312d" stroke-width="8"/>
-        <circle cx="42" cy="42" r="${R}" fill="none" stroke="#d4a84b" stroke-width="8" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C * (1 - c.pctPaid)}" transform="rotate(-90 42 42)"/>
-        <text x="42" y="47" text-anchor="middle" fill="#ece6d6" font-family="IBM Plex Mono" font-size="15">${p}%</text></svg>
+      <div class="ring"><svg width="84" height="84" viewBox="0 0 84 84"><circle cx="42" cy="42" r="${R}" fill="none" stroke-width="8" class="ring-bg"/>
+        <circle cx="42" cy="42" r="${R}" fill="none" stroke-width="8" class="ring-fg" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C * (1 - c.pctPaid)}" transform="rotate(-90 42 42)"/>
+        <text x="42" y="47" text-anchor="middle" class="ring-tx" font-family="IBM Plex Mono" font-size="15">${p}%</text></svg>
         <div><div class="num" style="font-size:22px">${money(c.collected, 2)}</div><div class="sub">collected of ${money(c.rtr, 2)}</div>
           <div class="sub">${c.made} of ${c.nPayments ?? '?'} payments · payoff ${date(c.finalDate)}</div></div></div>
       <div class="facts">${f('Funded', money(c.funded))}${f('Funded date', date(c.fundedDate))}${f('Factor', c.factor ?? '—')}${f('RTR', money(c.rtr, 2))}

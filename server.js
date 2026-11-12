@@ -45,6 +45,8 @@ const demoDeals = DEMO ? JSON.parse(JSON.stringify(require('./lib/demo'))) : nul
 
 const app = express();
 app.set('trust proxy', 1);
+// Allow embedding inside GoHighLevel only
+app.use((req, res, next) => { res.set('Content-Security-Policy', "frame-ancestors 'self' https://*.gohighlevel.com https://*.leadconnectorhq.com https://*.msgsndr.com " + (process.env.FRAME_ANCESTORS || '')); next(); });
 app.use(express.json());
 
 const readCookie = (req, name) => {
@@ -66,11 +68,12 @@ app.post('/api/login', (req, res) => {
   }
   if (!user) return res.status(401).json({ error: 'Wrong password' });
   const token = sign({ ...user, exp: Date.now() + 30 * 86400000 });
-  res.set('Set-Cookie', `cg_session=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${30 * 86400}${req.secure ? '; Secure' : ''}`);
+  // SameSite=None so the login also works when the dashboard is opened inside GHL (iframe)
+  res.set('Set-Cookie', `cg_session=${token}; Path=/; HttpOnly; Max-Age=${30 * 86400}; ${req.secure ? 'SameSite=None; Secure; Partitioned' : 'SameSite=Lax'}`);
   res.json({ ...user, demo: DEMO });
 });
 app.post('/api/logout', (req, res) => {
-  res.set('Set-Cookie', 'cg_session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0');
+  res.set('Set-Cookie', `cg_session=; Path=/; HttpOnly; Max-Age=0; ${req.secure ? 'SameSite=None; Secure; Partitioned' : 'SameSite=Lax'}`);
   res.json({ ok: true });
 });
 app.get('/api/me', (req, res) => res.json(req.user ? { ...req.user, demo: DEMO, reps: req.user.role === 'owner' ? Object.keys(REP_PASSWORDS) : undefined } : null));
