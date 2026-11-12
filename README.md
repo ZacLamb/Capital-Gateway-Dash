@@ -12,12 +12,14 @@ Reads funded deals from the Capital Gateway GHL sub-account (`WUqaLeDuJ5H8kocqpi
    |---|---|
    | `GHL_TOKEN` | the Private Integration token |
    | `GHL_LOCATION_ID` | `WUqaLeDuJ5H8kocqpip7` |
-   | `DASHBOARD_PASSWORD` | shared password for Capital Gateway's team |
+   | `OWNER_PASSWORD` | owner/manager login (sees everything, can log misses + status) |
+   | `REP_PASSWORDS` | `{"Aaron Meckler":"pw1","Daniel Talkins":"pw2","John Elfassi":"pw3","Steve Gordon":"pw4"}` — names must match the GHL dropdown |
+   | `SESSION_SECRET` | any long random string (keeps people logged in across redeploys) |
    | `AUTO_WRITEBACK` | `true` (fills blank RTR / Payment / Commission $ / rep $ fields in GHL) |
    | `CACHE_SECONDS` | `120` |
-5. Generate a domain, open it, log in with any username + the password. `/api/health` confirms all 24 fields were found.
+5. Generate a domain and log in with a password. Owner sees the full book + a Rep view toggle; each rep sees only their own deals and cut. `/api/health` confirms all 24 fields were found.
 
-With no `GHL_TOKEN` (or `DEMO_MODE=true`) it runs on sample data.
+With no `GHL_TOKEN` (or `DEMO_MODE=true`) it runs on sample data — owner password `owner`, reps by first name (`aaron`, `steve`…).
 
 ## Which deals show up
 Any opportunity with **Funded Amount** filled in, in any pipeline.

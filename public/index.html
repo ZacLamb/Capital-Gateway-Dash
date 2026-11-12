@@ -3,223 +3,362 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Capital Gateway · Deals & Commissions</title>
+<title>Capital Gateway · Ledger</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Schibsted+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#f4f6f9; --panel:#fff; --ink:#0f1b2d; --muted:#5b6b82; --line:#e3e8ef;
-  --brand:#0b3d63; --brand2:#1b6fa8; --accent:#c9a227;
-  --good:#16804a; --good-bg:#e5f5ec; --warn:#a86400; --warn-bg:#fff2dc; --bad:#b42318; --bad-bg:#fde8e6; --info-bg:#e8f1fa;
+  --ink:#0c1110; --ink2:#121918; --panel:#151d1b; --panel2:#1a2421; --line:#25312d; --line2:#2f3d38;
+  --ivory:#ece6d6; --dim:#9aa59f; --faint:#66736d;
+  --brass:#d4a84b; --brass2:#f0cf7e; --brass-bg:rgba(212,168,75,.12);
+  --good:#7fc79a; --good-bg:rgba(127,199,154,.12);
+  --warn:#e8a65a; --warn-bg:rgba(232,166,90,.13);
+  --bad:#e5766a; --bad-bg:rgba(229,118,106,.13);
+  --sky:#8fb8d8; --sky-bg:rgba(143,184,216,.12);
+  --serif:'Instrument Serif',Georgia,serif; --sans:'Schibsted Grotesk',sans-serif; --mono:'IBM Plex Mono',monospace;
 }
-*{box-sizing:border-box} html,body{margin:0}
-body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:14px}
-.num{font-family:'JetBrains Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums}
-header{background:var(--brand);color:#fff;padding:18px 28px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
-header .logo{width:34px;height:34px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#e8c95a);display:grid;place-items:center;font-weight:700;color:var(--brand)}
-header h1{font-size:17px;margin:0;font-weight:600}
-header .sub{font-size:12px;opacity:.75}
-header .sp{flex:1}
-.badge-demo{background:var(--accent);color:var(--brand);font-weight:600;font-size:11px;padding:4px 8px;border-radius:999px}
-button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--ink);padding:7px 12px}
-header button{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.25);color:#fff}
-main{padding:22px 28px 60px;max-width:1500px;margin:0 auto}
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:18px}
-.kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
-.kpi .l{font-size:12px;color:var(--muted);font-weight:500}
-.kpi .v{font-size:22px;font-weight:600;margin-top:6px}
-.kpi .s{font-size:12px;color:var(--muted);margin-top:2px}
-.tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
-.tab{background:transparent;border:none;padding:8px 14px;border-radius:8px;color:var(--muted);font-weight:500}
-.tab.on{background:var(--panel);color:var(--ink);box-shadow:0 0 0 1px var(--line)}
-.filters{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
-input,select{font:inherit;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink)}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:auto}
-table{width:100%;border-collapse:collapse;min-width:1100px}
-th{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);background:#fafbfc;font-weight:600;white-space:nowrap}
-td{padding:11px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
-td.r,th.r{text-align:right}
-tbody tr{cursor:pointer} tbody tr:hover{background:#f8fafc}
-.m{font-weight:600}.m small{display:block;font-weight:400;color:var(--muted);font-size:12px}
-.pill{display:inline-block;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px}
-.p-Performing{background:var(--good-bg);color:var(--good)}
-.p-SlowPay{background:var(--warn-bg);color:var(--warn)}
-.p-Default{background:var(--bad-bg);color:var(--bad)}
-.p-PaidOff{background:var(--info-bg);color:var(--brand2)}
-.bar{width:110px;height:7px;border-radius:9px;background:#e9edf3;overflow:hidden;display:inline-block;vertical-align:middle;margin-right:8px}
-.bar i{display:block;height:100%;background:var(--brand2)}
-.renew{font-size:11px;color:var(--good);font-weight:600;margin-left:4px}
-.warn{color:var(--warn);font-size:12px}
+*{box-sizing:border-box} html,body{margin:0;min-height:100%}
+body{background:var(--ink);color:var(--ivory);font-family:var(--sans);font-size:14px;-webkit-font-smoothing:antialiased;
+  background-image:radial-gradient(1200px 500px at 85% -10%,rgba(212,168,75,.09),transparent 60%),radial-gradient(900px 400px at -10% 0%,rgba(127,199,154,.05),transparent 60%)}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.035;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+button{font:inherit;color:inherit;cursor:pointer;background:none;border:1px solid var(--line2);border-radius:999px;padding:7px 14px;transition:.15s}
+button:hover{border-color:var(--brass);color:var(--brass2)}
+button:disabled{opacity:.35;pointer-events:none}
+select,input{font:inherit;color:var(--ivory);background:var(--panel);border:1px solid var(--line2);border-radius:999px;padding:8px 14px;outline:none}
+select:focus,input:focus{border-color:var(--brass)}
+.eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);font-weight:600}
+
+/* top bar */
+.top{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:14px;padding:14px 32px;background:rgba(12,17,16,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.mark{width:34px;height:34px;border:1px solid var(--brass);border-radius:50%;display:grid;place-items:center;font-family:var(--serif);font-size:17px;color:var(--brass2)}
+.brand{font-family:var(--serif);font-size:22px;letter-spacing:.01em}.brand i{color:var(--brass)}
+.sp{flex:1}
+.who{font-size:13px;color:var(--dim)}
+.seg{display:flex;border:1px solid var(--line2);border-radius:999px;padding:3px}
+.seg button{border:none;padding:6px 12px;font-size:13px;color:var(--dim)}
+.seg button.on{background:var(--brass);color:var(--ink);font-weight:600}
+.demo{font-size:10px;letter-spacing:.14em;font-weight:700;color:var(--brass);border:1px dashed var(--brass);padding:4px 8px;border-radius:4px}
+
+main{max-width:1440px;margin:0 auto;padding:30px 32px 80px}
+.rise{opacity:0;transform:translateY(10px);animation:rise .55s cubic-bezier(.2,.7,.2,1) forwards}
+@keyframes rise{to{opacity:1;transform:none}}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.15fr 1fr;gap:36px;align-items:end;margin-bottom:28px}
+.big{font-family:var(--serif);font-size:84px;line-height:.95;letter-spacing:-.02em;margin:10px 0 8px}
+.big small{font-size:.42em;color:var(--dim);font-style:italic;margin-left:8px}
+.lede{color:var(--dim);font-size:15px;max-width:520px}
+.health{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px 22px}
+.health .row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
+.stack{display:flex;height:14px;border-radius:999px;overflow:hidden;background:var(--ink2);gap:2px}
+.stack i{display:block;height:100%;width:0;transition:width 1.1s cubic-bezier(.2,.7,.2,1)}
+.legend{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.legend div{font-size:12px;color:var(--dim)}.legend b{display:block;color:var(--ivory);font-size:15px;margin-top:3px}
+.dot{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:6px;vertical-align:middle}
+
+/* kpi strip */
+.strip{display:grid;grid-template-columns:repeat(5,1fr);border:1px solid var(--line);border-radius:18px;overflow:hidden;margin-bottom:28px;background:var(--panel)}
+.strip>div{padding:16px 20px;border-right:1px solid var(--line)}.strip>div:last-child{border-right:none}
+.strip .v{font-size:22px;margin-top:6px}
+.strip .s{font-size:12px;color:var(--faint);margin-top:2px}
+.strip .hl .v{color:var(--brass2)}
+
+/* layout */
+.cols{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:22px;align-items:start}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.ph{display:flex;align-items:center;gap:10px;padding:16px 20px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.ph h2{font-family:var(--serif);font-weight:400;font-size:26px;margin:0}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font-size:12px;padding:5px 11px;color:var(--dim)}
+.chip.on{background:var(--brass-bg);border-color:var(--brass);color:var(--brass2)}
+.ph input{width:200px;padding:6px 12px}
+.scroll{overflow:auto}
+table{width:100%;border-collapse:collapse}
+th{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);font-weight:600;text-align:left;padding:12px 14px;white-space:nowrap;border-bottom:1px solid var(--line)}
+td{padding:14px;border-bottom:1px solid var(--line);white-space:nowrap;vertical-align:middle}
+tbody tr{cursor:pointer;transition:background .15s}
+tbody tr:hover{background:var(--panel2)}
+tbody tr:last-child td{border-bottom:none}
+.r{text-align:right}
+.merch{font-weight:600}.merch small{display:block;font-weight:400;color:var(--faint);font-size:12px;margin-top:2px}
+.sub{font-size:12px;color:var(--faint);margin-top:2px}
+.meter{width:120px;height:5px;background:var(--ink2);border-radius:9px;overflow:hidden;margin-top:6px}
+.meter i{display:block;height:100%;background:var(--brass)}
+.tag{display:inline-block;font-size:11.5px;font-weight:600;padding:4px 10px;border-radius:999px}
+.t-Performing{background:var(--good-bg);color:var(--good)}
+.t-SlowPay{background:var(--warn-bg);color:var(--warn)}
+.t-Default{background:var(--bad-bg);color:var(--bad)}
+.t-PaidOff{background:var(--sky-bg);color:var(--sky)}
+.renew{font-size:10px;letter-spacing:.12em;font-weight:700;color:var(--ink);background:var(--brass);padding:2px 6px;border-radius:4px;margin-left:8px;vertical-align:middle}
+.warnline{color:var(--warn)}
+
+/* leaderboard */
+.lb{padding:6px 20px 18px}
+.lb .rep{padding:14px 0;border-bottom:1px solid var(--line)}
+.lb .rep:last-child{border-bottom:none}
+.lb .top1{display:flex;justify-content:space-between;align-items:baseline}
+.lb .name{font-weight:600}.lb .rank{font-family:var(--serif);font-style:italic;color:var(--brass);margin-right:8px;font-size:18px}
+.lb .bar{height:4px;background:var(--ink2);border-radius:9px;margin:8px 0 6px;overflow:hidden}
+.lb .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--brass),var(--brass2));width:0;transition:width 1s .2s}
+.lb .meta{font-size:12px;color:var(--faint)}
+
+/* rep view */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-bottom:22px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px 20px}
+.card h3{font-family:var(--serif);font-weight:400;font-size:22px;margin:4px 0 12px}
+.mini{display:flex;justify-content:space-between;padding:9px 0;border-top:1px solid var(--line);font-size:13px}
+.mini:first-of-type{border-top:none}
+.empty{color:var(--faint);padding:30px 20px;text-align:center}
+
 /* drawer */
-.scrim{position:fixed;inset:0;background:rgba(15,27,45,.35);display:none}
-.drawer{position:fixed;top:0;right:0;height:100%;width:min(520px,100%);background:#fff;box-shadow:-10px 0 40px rgba(0,0,0,.15);transform:translateX(100%);transition:transform .2s;overflow:auto;padding:22px 24px}
-.open .scrim{display:block}.open .drawer{transform:none}
-.drawer h2{margin:0 0 2px;font-size:19px}
-.drawer h3{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:22px 0 8px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.cell{background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
-.cell .l{font-size:11px;color:var(--muted)}.cell .v{font-weight:600;margin-top:3px}
-.splits td{padding:8px 6px;cursor:default}
-.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.primary{background:var(--brand);color:#fff;border-color:var(--brand)}
-.close{float:right}
-.empty{padding:40px;text-align:center;color:var(--muted)}
-.foot{color:var(--muted);font-size:12px;margin-top:10px}
-@media (max-width:640px){header,main{padding-left:16px;padding-right:16px}.filters{margin-left:0;width:100%}}
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:.2s;z-index:9}
+.drawer{position:fixed;top:0;right:0;height:100%;width:min(540px,100%);background:var(--ink2);border-left:1px solid var(--line2);transform:translateX(100%);transition:transform .28s cubic-bezier(.2,.7,.2,1);overflow:auto;padding:26px 28px 40px;z-index:10}
+.open .scrim{opacity:1;pointer-events:auto}.open .drawer{transform:none}
+.drawer h2{font-family:var(--serif);font-weight:400;font-size:36px;margin:6px 0 4px;line-height:1}
+.drawer .sec{margin-top:26px}
+.facts{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-top:10px}
+.facts>div{padding:12px 14px;border-bottom:1px solid var(--line);border-right:1px solid var(--line)}
+.facts>div:nth-child(2n){border-right:none}
+.facts>div:nth-last-child(-n+2){border-bottom:none}
+.facts .l{font-size:11px;color:var(--faint)}.facts .v{margin-top:4px;font-size:15px}
+.ring{display:flex;align-items:center;gap:18px;margin-top:12px}
+.acts{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:14px}
+.primary{background:var(--brass);border-color:var(--brass);color:var(--ink);font-weight:600}
+.primary:hover{background:var(--brass2);color:var(--ink)}
+.split td{padding:10px 4px;cursor:default}
+.x{float:right}
+
+/* login */
+.login{min-height:100vh;display:grid;place-items:center;padding:20px}
+.login form{width:min(380px,100%);background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:34px 30px;text-align:center}
+.login .mark{margin:0 auto 14px;width:52px;height:52px;font-size:26px}
+.login h1{font-family:var(--serif);font-weight:400;font-size:34px;margin:0 0 4px}
+.login input{width:100%;margin:22px 0 12px;border-radius:12px;padding:12px 14px}
+.login button{width:100%;border-radius:12px;padding:12px}
+.err{color:var(--bad);font-size:13px;min-height:18px}
+
+@media (max-width:1100px){.cols{grid-template-columns:1fr}.hero{grid-template-columns:1fr}.strip{grid-template-columns:repeat(2,1fr)}.strip>div{border-bottom:1px solid var(--line)}}
+@media (max-width:640px){.top,main{padding-left:16px;padding-right:16px}.big{font-size:56px}.ph input{width:100%}.who{display:none}}
 </style>
 </head>
 <body>
-<header>
-  <div class="logo">CG</div>
-  <div><h1>Capital Gateway — Deals &amp; Commissions</h1><div class="sub" id="sub">Loading…</div></div>
-  <span class="badge-demo" id="demo" hidden>SAMPLE DATA</span>
-  <div class="sp"></div>
-  <button id="refresh">↻ Refresh from GHL</button>
-</header>
-<main>
-  <section class="kpis" id="kpis"></section>
-  <div class="tabs">
-    <button class="tab on" data-tab="deals">Funded deals</button>
-    <button class="tab" data-tab="reps">Rep payouts</button>
-    <div class="filters">
-      <input id="q" placeholder="Search merchant…">
-      <select id="fAgent"><option value="">All agents</option></select>
-      <select id="fStatus"><option value="">All statuses</option><option>Performing</option><option>Slow Pay</option><option>Default</option><option>Paid Off</option></select>
-    </div>
-  </div>
-  <div class="card" id="view"></div>
-  <div class="foot" id="foot"></div>
-</main>
+<div id="app"></div>
 <div id="dw"><div class="scrim" id="scrim"></div><aside class="drawer" id="drawer"></aside></div>
-
 <script>
 const $ = (s) => document.querySelector(s);
-const money = (n, d = 0) => n == null ? '—' : '$' + Number(n).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
-const pct = (n) => n == null ? '—' : (Math.round(n * 10) / 10) + '%';
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const pill = (s) => `<span class="pill p-${s.replace(/\s/g, '')}">${esc(s)}</span>`;
-const fmtDate = (s) => s ? new Date(s + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
-let DATA = null, TAB = 'deals', OPEN = null;
+const money = (n, d = 0) => n == null ? '—' : '$' + Number(n).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
+const short = (n) => n == null ? '—' : n >= 1e6 ? '$' + (n / 1e6).toFixed(2) + 'M' : n >= 1e3 ? '$' + (n / 1e3).toFixed(n >= 1e5 ? 0 : 1) + 'K' : money(n);
+const pct = (n) => n == null ? '—' : (Math.round(n * 10) / 10) + '%';
+const date = (s) => s ? new Date(s + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
+const tag = (s) => `<span class="tag t-${s.replace(/\s/g, '')}">${esc(s)}</span>`;
+const st = (i) => `style="animation-delay:${i * 60}ms"`;
 
-async function load(refresh) {
-  $('#sub').textContent = 'Loading…';
-  const r = await fetch('/api/deals' + (refresh ? '?refresh=1' : ''));
-  const j = await r.json();
-  if (!r.ok) { $('#view').innerHTML = `<div class="empty">Could not load from GHL: ${esc(j.error)}</div>`; $('#sub').textContent = 'Error'; return; }
-  set(j);
+let ME = null, DATA = null, AS = '', FILTER = 'all', Q = '', OPEN = null;
+
+async function api(url, opt) {
+  const r = await fetch(url, { headers: { 'Content-Type': 'application/json' }, ...opt });
+  const j = await r.json().catch(() => ({}));
+  if (r.status === 401) { ME = null; renderLogin(); throw new Error('login'); }
+  if (!r.ok) throw new Error(j.error || 'Request failed');
+  return j;
 }
-function set(j) {
-  DATA = j;
-  $('#demo').hidden = !j.demo;
-  $('#sub').textContent = `Updated ${new Date(j.generatedAt).toLocaleTimeString()} · ${j.totals.deals} funded deals`;
-  const agents = [...new Set(j.reps.map((r) => r.agent))].sort();
-  const cur = $('#fAgent').value;
-  $('#fAgent').innerHTML = '<option value="">All agents</option>' + agents.map((a) => `<option ${a === cur ? 'selected' : ''}>${esc(a)}</option>`).join('');
-  render();
-  if (OPEN) openDeal(OPEN);
+
+/* ---------- login ---------- */
+function renderLogin(err = '') {
+  $('#app').innerHTML = `<div class="login"><form id="lf" class="rise">
+    <div class="mark">CG</div><h1>Capital Gateway</h1><div class="eyebrow">Deals &amp; Commissions</div>
+    <input id="pw" type="password" placeholder="Password" autocomplete="current-password" autofocus>
+    <div class="err">${esc(err)}</div><button class="primary">Sign in</button></form></div>`;
+  $('#lf').onsubmit = async (e) => {
+    e.preventDefault();
+    const r = await fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: $('#pw').value }) });
+    if (!r.ok) return renderLogin('Wrong password');
+    boot();
+  };
 }
-function kpis() {
+
+/* ---------- shell ---------- */
+function shell(inner) {
+  const owner = ME.role === 'owner';
+  const reps = owner ? (ME.reps || []) : [];
+  $('#app').innerHTML = `
+    <header class="top">
+      <div class="mark">CG</div><div class="brand">Capital <i>Gateway</i></div>
+      ${DATA?.demo ? '<span class="demo">SAMPLE DATA</span>' : ''}
+      <div class="sp"></div>
+      ${owner ? `<div class="seg"><button data-v="" class="${AS ? '' : 'on'}">Owner</button><button data-v="rep" class="${AS ? 'on' : ''}">Rep view</button></div>
+        ${AS || reps.length ? `<select id="as" ${AS ? '' : 'hidden'}>${reps.map((r) => `<option ${r === AS ? 'selected' : ''}>${esc(r)}</option>`).join('')}</select>` : ''}` : ''}
+      ${owner ? "" : `<span class="who">${esc(ME.name)}</span>`}
+      <button id="ref" title="Pull latest from GHL">↻ Refresh</button>
+      <button id="out">Sign out</button>
+    </header><main>${inner}</main>`;
+  $('#ref').onclick = () => load(true);
+  $('#out').onclick = async () => { await fetch('/api/logout', { method: 'POST' }); ME = null; renderLogin(); };
+  document.querySelectorAll('.seg button').forEach((b) => b.onclick = () => { AS = b.dataset.v ? (reps[0] || '') : ''; load(); });
+  if ($('#as')) $('#as').onchange = (e) => { AS = e.target.value; load(); };
+}
+
+/* ---------- owner ---------- */
+function ownerPage() {
   const t = DATA.totals;
-  const k = [
-    ['Total funded', money(t.funded), `${t.deals} deals · ${t.active} active`],
-    ['Total RTR', money(t.rtr), 'Payback owed to funders'],
-    ['Collected to date', money(t.collected), t.rtr ? Math.round(t.collected / t.rtr * 100) + '% of RTR' : ''],
-    ['Outstanding balance', money(t.outstanding), `${t.missed} missed payments · ${t.defaults} in default`],
-    ['Gross commission', money(t.commission), `Rep payouts ${money(t.repPayouts)}`],
-    ['House keeps', money(t.house), `${t.renewalEligible} deals renewal-eligible`],
-  ];
-  $('#kpis').innerHTML = k.map(([l, v, s]) => `<div class="kpi"><div class="l">${l}</div><div class="v num">${v}</div><div class="s">${s}</div></div>`).join('');
+  const perf = Math.max(0, t.outstanding - t.atRisk);
+  const base = t.rtr || 1;
+  const shown = filtered(DATA.deals);
+  const maxE = Math.max(1, ...DATA.reps.map((r) => r.earned));
+  return `
+  <section class="hero">
+    <div class="rise" ${st(0)}><div class="eyebrow">Book funded</div>
+      <div class="big num">${short(t.funded)}<small>${t.deals} deals</small></div>
+      <div class="lede">${t.active} active · ${money(t.rtr)} owed back to funders · updated ${new Date(DATA.generatedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</div></div>
+    <div class="health rise" ${st(1)}>
+      <div class="row"><span class="eyebrow">Repayment health</span><span class="num" style="color:var(--brass2)">${Math.round(t.collected / base * 100)}% collected</span></div>
+      <div class="stack"><i data-w="${t.collected / base * 100}" style="background:var(--brass)"></i><i data-w="${perf / base * 100}" style="background:#3c4b46"></i><i data-w="${t.atRisk / base * 100}" style="background:var(--bad)"></i></div>
+      <div class="legend"><div><span class="dot" style="background:var(--brass)"></span>Collected<b class="num">${money(t.collected)}</b></div>
+        <div><span class="dot" style="background:#3c4b46"></span>Outstanding<b class="num">${money(perf)}</b></div>
+        <div><span class="dot" style="background:var(--bad)"></span>At risk<b class="num">${money(t.atRisk)}</b></div></div>
+    </div>
+  </section>
+  <section class="strip rise" ${st(2)}>
+    <div><div class="eyebrow">Gross commission</div><div class="v num">${money(t.commission)}</div><div class="s">${t.funded ? pct(t.commission / t.funded * 100) : '—'} of funded</div></div>
+    <div><div class="eyebrow">Rep payouts</div><div class="v num">${money(t.repPayouts)}</div><div class="s">${DATA.reps.length} reps</div></div>
+    <div class="hl"><div class="eyebrow">House keeps</div><div class="v num">${money(t.house)}</div><div class="s">after rep splits</div></div>
+    <div><div class="eyebrow">Renewals ready</div><div class="v num">${t.renewals}</div><div class="s">50%+ paid in</div></div>
+    <div><div class="eyebrow">Missed payments</div><div class="v num" style="color:${t.missed ? 'var(--warn)' : 'inherit'}">${t.missed}</div><div class="s">across the book</div></div>
+  </section>
+  <div class="cols">
+    <section class="panel rise" ${st(3)}>
+      <div class="ph"><h2>Ledger</h2><div class="sp"></div>${chips()}<input id="q" placeholder="Search merchant" value="${esc(Q)}"></div>
+      <div class="scroll">${shown.length ? `<table><thead><tr><th>Merchant</th><th class="r">Funded</th><th>Terms</th><th class="r">Payment</th><th>Paid in</th><th class="r">Balance</th><th>Status</th><th class="r">Commission</th></tr></thead><tbody>
+      ${shown.map((d) => { const c = d.calc, p = Math.round(c.pctPaid * 100); return `<tr data-id="${d.id}">
+        <td><div class="merch">${esc(d.name)}${c.renewalEligible && c.status !== 'Paid Off' ? '<span class="renew">RENEW</span>' : ''}<small>${c.warnings.length ? `<span class="warnline">⚠ ${esc(c.warnings[0])}</span>` : `${date(c.fundedDate)} · ${esc(c.opener?.agent || 'No opener')}`}</small></div></td>
+        <td class="r num">${money(c.funded)}<div class="sub">× ${c.factor ?? '—'} = ${short(c.rtr)}</div></td>
+        <td>${c.frequency || '—'}<div class="sub">${c.termLength ?? '—'} ${esc((c.termUnit || '').toLowerCase())}</div></td>
+        <td class="r num">${money(c.payment, 2)}</td>
+        <td><span class="num">${p}%</span> <span class="sub" style="display:inline">${c.made}/${c.nPayments ?? '?'}${c.missed ? ` · <span style="color:var(--warn)">${c.missed} missed</span>` : ''}</span><div class="meter"><i style="width:${p}%"></i></div></td>
+        <td class="r num">${money(c.balance)}</td><td>${tag(c.status)}</td>
+        <td class="r num">${money(c.commission)}<div class="sub">house ${money(c.house)}</div></td></tr>`; }).join('')}</tbody></table>` : '<div class="empty">No deals here. A deal shows up once Funded Amount is filled in GHL.</div>'}</div>
+    </section>
+    <aside class="panel rise" ${st(4)}>
+      <div class="ph"><h2>Rep payouts</h2></div>
+      <div class="lb">${DATA.reps.map((r, i) => `<div class="rep"><div class="top1"><span><span class="rank">${i + 1}</span><span class="name">${esc(r.agent)}</span></span><span class="num">${money(r.earned)}</span></div>
+        <div class="bar"><i data-w="${r.earned / maxE * 100}"></i></div><div class="meta">${r.opened} opened · ${r.closed} closed · ${short(r.funded)} funded</div></div>`).join('') || '<div class="empty">No reps assigned yet</div>'}</div>
+    </aside>
+  </div>`;
 }
-function filtered() {
-  const q = $('#q').value.toLowerCase(), a = $('#fAgent').value, s = $('#fStatus').value;
-  return DATA.deals.filter((d) => {
+
+/* ---------- rep ---------- */
+function repPage() {
+  const t = DATA.totals;
+  const renew = DATA.deals.filter((d) => d.calc.renewalEligible && d.calc.status !== 'Paid Off');
+  const risk = DATA.deals.filter((d) => ['Slow Pay', 'Default'].includes(d.calc.status));
+  const shown = filtered(DATA.deals);
+  return `
+  <section class="hero">
+    <div class="rise" ${st(0)}><div class="eyebrow">${DATA.previewBy ? 'Previewing ' + esc(DATA.agent) : 'Your commission'}</div>
+      <div class="big num">${money(t.earned)}</div>
+      <div class="lede">${t.deals} deals · ${t.opened} opened · ${t.closed} closed · ${money(t.funded)} funded</div></div>
+    <div class="cards" style="margin:0">
+      <div class="card rise" ${st(1)}><div class="eyebrow">Ready to renew</div><h3>${renew.length} merchant${renew.length === 1 ? '' : 's'}</h3>
+        ${renew.slice(0, 4).map((d) => `<div class="mini"><span>${esc(d.name)}</span><span class="num" style="color:var(--brass2)">${Math.round(d.calc.pctPaid * 100)}% paid</span></div>`).join('') || '<div class="sub">None yet — renewals open at 50% paid in.</div>'}</div>
+      <div class="card rise" ${st(2)}><div class="eyebrow">Needs attention</div><h3>${risk.length} deal${risk.length === 1 ? '' : 's'}</h3>
+        ${risk.slice(0, 4).map((d) => `<div class="mini"><span>${esc(d.name)}</span>${tag(d.calc.status)}</div>`).join('') || '<div class="sub">All your deals are paying.</div>'}</div>
+    </div>
+  </section>
+  <section class="panel rise" ${st(3)}>
+    <div class="ph"><h2>My deals</h2><div class="sp"></div>${chips()}<input id="q" placeholder="Search merchant" value="${esc(Q)}"></div>
+    <div class="scroll">${shown.length ? `<table><thead><tr><th>Merchant</th><th>My role</th><th class="r">My cut</th><th class="r">Funded</th><th>Paid in</th><th class="r">Balance</th><th>Status</th></tr></thead><tbody>
+    ${shown.map((d) => { const c = d.calc, p = Math.round(c.pctPaid * 100); return `<tr data-id="${d.id}">
+      <td><div class="merch">${esc(d.name)}${c.renewalEligible && c.status !== 'Paid Off' ? '<span class="renew">RENEW</span>' : ''}<small>${date(c.fundedDate)}${c.team.length ? ' · with ' + c.team.map(esc).join(', ') : ''}</small></div></td>
+      <td>${d.me.roles.map((r) => r.role).join(' + ')}<div class="sub">${d.me.roles.map((r) => pct(r.pct)).join(' + ')} of commission</div></td>
+      <td class="r num" style="color:var(--brass2);font-weight:600">${money(d.me.earned, 2)}</td>
+      <td class="r num">${money(c.funded)}</td>
+      <td><span class="num">${p}%</span><div class="meter"><i style="width:${p}%"></i></div></td>
+      <td class="r num">${money(c.balance)}</td><td>${tag(c.status)}</td></tr>`; }).join('')}</tbody></table>` : '<div class="empty">No deals with you as opener or closer yet.</div>'}</div>
+  </section>`;
+}
+
+/* ---------- shared ---------- */
+function chips() {
+  const opts = [['all', 'All'], ['active', 'Active'], ['renew', 'Renewals'], ['risk', 'At risk'], ['paid', 'Paid off']];
+  return `<div class="chips">${opts.map(([k, l]) => `<button class="chip ${FILTER === k ? 'on' : ''}" data-f="${k}">${l}</button>`).join('')}</div>`;
+}
+function filtered(deals) {
+  return deals.filter((d) => {
     const c = d.calc;
-    if (q && !d.name.toLowerCase().includes(q)) return false;
-    if (s && c.status !== s) return false;
-    if (a && c.opener?.agent !== a && !c.closers.some((x) => x.agent === a)) return false;
+    if (Q && !d.name.toLowerCase().includes(Q.toLowerCase())) return false;
+    if (FILTER === 'active') return !['Paid Off', 'Default'].includes(c.status);
+    if (FILTER === 'renew') return c.renewalEligible && c.status !== 'Paid Off';
+    if (FILTER === 'risk') return ['Slow Pay', 'Default'].includes(c.status);
+    if (FILTER === 'paid') return c.status === 'Paid Off';
     return true;
   });
 }
 function render() {
-  kpis();
-  document.querySelectorAll('.tab').forEach((b) => b.classList.toggle('on', b.dataset.tab === TAB));
-  if (TAB === 'deals') renderDeals(); else renderReps();
+  shell(DATA.view === 'owner' ? ownerPage() : repPage());
+  requestAnimationFrame(() => document.querySelectorAll('[data-w]').forEach((el) => el.style.width = Math.max(0, Math.min(100, el.dataset.w)) + '%'));
+  document.querySelectorAll('[data-f]').forEach((b) => b.onclick = () => { FILTER = b.dataset.f; render(); });
+  const q = $('#q'); if (q) q.oninput = (e) => { Q = e.target.value; const pos = e.target.selectionStart; render(); const n = $('#q'); n.focus(); n.setSelectionRange(pos, pos); };
+  document.querySelectorAll('tbody tr[data-id]').forEach((tr) => tr.onclick = () => openDeal(tr.dataset.id));
+  if (OPEN) openDeal(OPEN);
 }
-function renderDeals() {
-  const rows = filtered();
-  if (!rows.length) { $('#view').innerHTML = '<div class="empty">No funded deals match. Deals appear here once <b>Funded Amount</b> is filled on the opportunity.</div>'; return; }
-  $('#view').innerHTML = `<table><thead><tr>
-    <th>Merchant</th><th>Funded</th><th class="r">Amount</th><th class="r">Factor</th><th class="r">RTR</th>
-    <th>Terms</th><th class="r">Payment</th><th>Paid</th><th class="r">Balance</th><th>Status</th>
-    <th class="r">Commission</th><th>Opener / Closers</th></tr></thead><tbody>
-    ${rows.map((d) => { const c = d.calc; const p = Math.round(c.pctPaid * 100); return `<tr data-id="${d.id}">
-      <td class="m">${esc(d.name)}${c.warnings.length ? `<small class="warn">⚠ ${esc(c.warnings[0])}</small>` : `<small>${esc(d.stage || d.pipeline)}</small>`}</td>
-      <td>${fmtDate(c.fundedDate)}</td>
-      <td class="r num">${money(c.funded)}</td><td class="r num">${c.factor ?? '—'}</td><td class="r num">${money(c.rtr)}</td>
-      <td>${c.frequency || '—'} · ${c.termLength ?? '—'} ${esc(c.termUnit || '')}</td>
-      <td class="r num">${money(c.payment, 2)}</td>
-      <td><span class="bar"><i style="width:${p}%"></i></span><span class="num">${p}%</span>${c.renewalEligible && c.status !== 'Paid Off' ? '<span class="renew">RENEWAL</span>' : ''}<div style="font-size:12px;color:var(--muted)">${c.made}/${c.nPayments ?? '?'} pmts${c.missed ? ` · ${c.missed} missed` : ''}</div></td>
-      <td class="r num">${money(c.balance)}</td><td>${pill(c.status)}</td>
-      <td class="r num">${money(c.commission)}<div style="font-size:12px;color:var(--muted)">${c.commissionPct != null ? c.commissionPct + '%' : ''}</div></td>
-      <td>${esc(c.opener?.agent || '—')}<div style="font-size:12px;color:var(--muted)">${c.closers.map((x) => esc(x.agent)).join(', ') || '—'}</div></td>
-    </tr>`; }).join('')}</tbody></table>`;
-  document.querySelectorAll('tbody tr').forEach((tr) => tr.onclick = () => openDeal(tr.dataset.id));
-}
-function renderReps() {
-  const a = $('#fAgent').value;
-  const reps = DATA.reps.filter((r) => !a || r.agent === a);
-  if (!reps.length) { $('#view').innerHTML = '<div class="empty">No rep splits yet. Fill Opener / Closer fields on funded deals.</div>'; return; }
-  $('#view').innerHTML = `<table><thead><tr><th>Agent</th><th class="r">Deals opened</th><th class="r">Deals closed</th><th class="r">Funded credited</th><th class="r">Commission earned</th><th>Deals</th></tr></thead><tbody>
-    ${reps.map((r) => `<tr style="cursor:default"><td class="m">${esc(r.agent)}</td><td class="r num">${r.openerDeals}</td><td class="r num">${r.closerDeals}</td>
-      <td class="r num">${money(r.fundedCredited)}</td><td class="r num" style="font-weight:600">${money(r.earned, 2)}</td>
-      <td style="white-space:normal;font-size:12px;color:var(--muted)">${r.deals.map((d) => `${esc(d.name)} (${d.role}, ${money(d.amount, 2)})`).join(' · ')}</td></tr>`).join('')}
-  </tbody></table>`;
-}
+
 function openDeal(id) {
-  const d = DATA.deals.find((x) => x.id === id); if (!d) return;
-  OPEN = id; const c = d.calc;
-  const cell = (l, v) => `<div class="cell"><div class="l">${l}</div><div class="v num">${v}</div></div>`;
-  const splits = [c.opener && { role: 'Opener', ...c.opener }, ...c.closers.map((x) => ({ role: 'Closer ' + x.slot, ...x }))].filter(Boolean);
-  $('#drawer').innerHTML = `<button class="close" id="x">✕</button>
-    <h2>${esc(d.name)}</h2><div style="color:var(--muted)">${esc(d.pipeline)} ${d.stage ? '· ' + esc(d.stage) : ''}</div>
-    ${c.warnings.length ? `<p class="warn">⚠ ${c.warnings.map(esc).join(' · ')}</p>` : ''}
-    <h3>Deal terms</h3><div class="grid2">
-      ${cell('Funded amount', money(c.funded))}${cell('Funded date', fmtDate(c.fundedDate))}
-      ${cell('Factor rate', c.factor ?? '—')}${cell('RTR', money(c.rtr, 2))}
-      ${cell('Frequency', c.frequency || '—')}${cell('Term', `${c.termLength ?? '—'} ${esc(c.termUnit || '')}`)}
-      ${cell('Payment', money(c.payment, 2))}${cell('Total payments', c.nPayments ?? '—')}</div>
-    <h3>Payment tracking</h3><div class="grid2">
-      ${cell('Payments due to date', c.due)}${cell('Payments made', c.made)}
-      ${cell('Collected', money(c.collected, 2))}${cell('Balance remaining', money(c.balance, 2))}
-      ${cell('% paid in', Math.round(c.pctPaid * 100) + '%' + (c.renewalEligible && c.status !== 'Paid Off' ? ' · renewal-eligible' : ''))}${cell('Projected payoff', fmtDate(c.finalDate))}</div>
-    <div class="actions" style="margin-top:12px">
-      <span>Missed payments: <b class="num">${c.missed}</b></span>
-      <button data-m="1">+ Log missed / bounced</button><button data-m="-1" ${c.missed ? '' : 'disabled'}>− Undo</button>
-    </div>
-    <div class="actions" style="margin-top:10px"><span>Status</span>
-      <select id="st">${['Performing', 'Slow Pay', 'Default', 'Paid Off'].map((s) => `<option ${s === c.status ? 'selected' : ''}>${s}</option>`).join('')}</select>
-      <button class="primary" id="saveSt">Save status</button></div>
-    <h3>Commission</h3><div class="grid2">${cell('Commission %', c.commissionPct != null ? c.commissionPct + '% of funded' : '—')}${cell('Commission $', money(c.commission, 2))}</div>
-    <table class="splits" style="min-width:0;margin-top:10px"><thead><tr><th>Role</th><th>Agent</th><th class="r">% of comm.</th><th class="r">Payout</th></tr></thead><tbody>
-      ${splits.map((s) => `<tr><td>${s.role}</td><td>${esc(s.agent)}</td><td class="r num">${pct(s.pct)}</td><td class="r num">${money(s.amount, 2)}</td></tr>`).join('') || '<tr><td colspan="4" style="color:var(--muted)">No reps assigned</td></tr>'}
-      <tr><td colspan="2"><b>House</b></td><td class="r num">${pct(100 - c.splitPct)}</td><td class="r num"><b>${money(c.house, 2)}</b></td></tr>
-    </tbody></table>
-    <p style="font-size:12px;color:var(--muted);margin-top:18px">Edit terms on the opportunity in GHL — changes show here on the next refresh.</p>`;
+  const d = DATA.deals.find((x) => x.id === id); if (!d) return closeDeal();
+  OPEN = id; const c = d.calc; const owner = DATA.view === 'owner';
+  const f = (l, v) => `<div><div class="l">${l}</div><div class="v num">${v}</div></div>`;
+  const p = Math.round(c.pctPaid * 100), R = 34, C = 2 * Math.PI * R;
+  let splits = '';
+  if (owner) {
+    const rows = [c.opener && { role: 'Opener', ...c.opener }, ...c.closers.map((x) => ({ role: 'Closer ' + x.slot, ...x }))].filter(Boolean);
+    splits = `<div class="sec"><div class="eyebrow">Commission · ${c.commissionPct != null ? c.commissionPct + '% of funded' : '—'} = ${money(c.commission, 2)}</div>
+      <table class="split"><tbody>${rows.map((s) => `<tr><td>${s.role}</td><td>${esc(s.agent)}</td><td class="r num">${pct(s.pct)}</td><td class="r num">${money(s.amount, 2)}</td></tr>`).join('')}
+      <tr><td style="color:var(--brass2)">House</td><td></td><td class="r num">${pct(100 - c.splitPct)}</td><td class="r num" style="color:var(--brass2)">${money(c.house, 2)}</td></tr></tbody></table></div>`;
+  } else {
+    splits = `<div class="sec"><div class="eyebrow">Your cut</div><table class="split"><tbody>${d.me.roles.map((r) => `<tr><td>${r.role}</td><td class="r num">${pct(r.pct)} of commission</td><td class="r num" style="color:var(--brass2)">${money(r.amount, 2)}</td></tr>`).join('')}</tbody></table></div>`;
+  }
+  $('#drawer').innerHTML = `<button class="x" id="x">Close</button>
+    <div class="eyebrow">${esc(d.pipeline)}${d.stage ? ' · ' + esc(d.stage) : ''}</div>
+    <h2>${esc(d.name)}</h2>${tag(c.status)}
+    ${c.warnings.length ? `<p class="warnline" style="font-size:13px">⚠ ${c.warnings.map(esc).join(' · ')}</p>` : ''}
+    <div class="sec"><div class="eyebrow">Repayment</div>
+      <div class="ring"><svg width="84" height="84" viewBox="0 0 84 84"><circle cx="42" cy="42" r="${R}" fill="none" stroke="#25312d" stroke-width="8"/>
+        <circle cx="42" cy="42" r="${R}" fill="none" stroke="#d4a84b" stroke-width="8" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C * (1 - c.pctPaid)}" transform="rotate(-90 42 42)"/>
+        <text x="42" y="47" text-anchor="middle" fill="#ece6d6" font-family="IBM Plex Mono" font-size="15">${p}%</text></svg>
+        <div><div class="num" style="font-size:22px">${money(c.collected, 2)}</div><div class="sub">collected of ${money(c.rtr, 2)}</div>
+          <div class="sub">${c.made} of ${c.nPayments ?? '?'} payments · payoff ${date(c.finalDate)}</div></div></div>
+      <div class="facts">${f('Funded', money(c.funded))}${f('Funded date', date(c.fundedDate))}${f('Factor', c.factor ?? '—')}${f('RTR', money(c.rtr, 2))}
+        ${f('Payment', money(c.payment, 2) + ' ' + (c.frequency ? c.frequency.toLowerCase() : ''))}${f('Term', `${c.termLength ?? '—'} ${esc((c.termUnit || '').toLowerCase())}`)}
+        ${f('Balance', money(c.balance, 2))}${f('Missed', c.missed)}</div>
+      ${owner ? `<div class="acts"><button data-m="1">+ Missed payment</button><button data-m="-1" ${c.missed ? '' : 'disabled'}>Undo</button>
+        <span class="sp"></span><select id="st">${['Performing', 'Slow Pay', 'Default', 'Paid Off'].map((s) => `<option ${s === c.status ? 'selected' : ''}>${s}</option>`).join('')}</select><button class="primary" id="saveSt">Save</button></div>` : ''}
+    </div>${splits}`;
   $('#dw').classList.add('open');
   $('#x').onclick = closeDeal;
-  document.querySelectorAll('[data-m]').forEach((b) => b.onclick = () => post(`/api/deals/${id}/missed`, { delta: Number(b.dataset.m) }));
-  $('#saveSt').onclick = () => post(`/api/deals/${id}/status`, { status: $('#st').value });
+  if (owner) {
+    document.querySelectorAll('[data-m]').forEach((b) => b.onclick = () => act(`/api/deals/${id}/missed`, { delta: Number(b.dataset.m) }));
+    $('#saveSt').onclick = () => act(`/api/deals/${id}/status`, { status: $('#st').value });
+  }
 }
 function closeDeal() { OPEN = null; $('#dw').classList.remove('open'); }
-async function post(url, body) {
-  const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-  const j = await r.json(); if (!r.ok) return alert(j.error); set(j);
-}
+async function act(url, body) { try { DATA = await api(url, { method: 'POST', body: JSON.stringify(body) }); render(); } catch (e) { if (e.message !== 'login') alert(e.message); } }
 $('#scrim').onclick = closeDeal;
-$('#refresh').onclick = () => load(true);
-document.querySelectorAll('.tab').forEach((b) => b.onclick = () => { TAB = b.dataset.tab; render(); });
-['#q', '#fAgent', '#fStatus'].forEach((s) => $(s).oninput = render);
-load();
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDeal(); });
+
+async function load(refresh) {
+  try {
+    const qs = new URLSearchParams(); if (refresh) qs.set('refresh', '1'); if (AS) qs.set('as', AS);
+    DATA = await api('/api/deals?' + qs); render();
+  } catch (e) { if (e.message !== 'login') $('#app').innerHTML = `<div class="login"><div class="empty">Couldn't load from GHL: ${esc(e.message)}</div></div>`; }
+}
+async function boot() {
+  ME = await fetch('/api/me').then((r) => r.json()).catch(() => null);
+  if (!ME) return renderLogin();
+  load();
+}
+boot();
 </script>
 </body>
 </html>
