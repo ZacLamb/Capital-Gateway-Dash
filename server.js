@@ -213,12 +213,17 @@ function teamView(data, period, showPay, me) {
     board, feed,
   };
 }
-app.get('/api/team', needUser, async (req, res) => {
+// Public: the Team board needs no login. Pay $ only shows for owners (or everyone if TEAM_SHOW_PAY=true).
+const TEAM_KEY = process.env.TEAM_KEY || '';
+app.get('/api/team', async (req, res) => {
+  // No login needed, but if TEAM_KEY is set the link must carry ?k=TEAM_KEY (the GHL menu link does).
+  if (!req.user && TEAM_KEY && !safeEq(String(req.query.k || ''), TEAM_KEY)) return res.status(401).json({ error: 'Open the team board from GHL, or sign in.' });
   try {
     const period = ['month', 'quarter', 'all'].includes(req.query.period) ? req.query.period : 'month';
-    const data = await build(req.query.refresh === '1');
-    const owner = req.user.role === 'owner';
-    res.json(teamView(data, period, owner || TEAM_SHOW_PAY, owner ? null : req.user.name));
+    const data = await build(req.query.refresh === '1' && !!req.user);
+    const owner = req.user?.role === 'owner';
+    const me = req.user?.role === 'rep' ? req.user.name : null;
+    res.json(teamView(data, period, owner || TEAM_SHOW_PAY, me));
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 

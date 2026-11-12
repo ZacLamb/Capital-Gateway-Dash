@@ -191,12 +191,13 @@ const date = (s) => s ? new Date(s + 'T12:00:00').toLocaleDateString('en-US', { 
 const tag = (s) => `<span class="tag t-${s.replace(/\s/g, '')}">${esc(s)}</span>`;
 const st = (i) => `style="animation-delay:${i * 60}ms"`;
 
+const URLQ = new URLSearchParams(location.search); const TEAMK = URLQ.get('k') || '';
 let ME = null, DATA = null, AS = '', FILTER = 'all', Q = '', OPEN = null, PAGE = 'book', PERIOD = 'month';
 
 async function api(url, opt) {
   const r = await fetch(url, { headers: { 'Content-Type': 'application/json' }, ...opt });
   const j = await r.json().catch(() => ({}));
-  if (r.status === 401) { ME = null; renderLogin(); throw new Error('login'); }
+  if (r.status === 401) { ME = null; PAGE = 'team'; renderLogin(); throw new Error('login'); }
   if (!r.ok) throw new Error(j.error || 'Request failed');
   return j;
 }
@@ -206,17 +207,29 @@ function renderLogin(err = '') {
   $('#app').innerHTML = `<div class="login"><form id="lf" class="rise">
     <div class="mark">CG</div><h1>Capital Gateway</h1><div class="eyebrow">Deals &amp; Commissions</div>
     <input id="pw" type="password" placeholder="Password" autocomplete="current-password" autofocus>
-    <div class="err">${esc(err)}</div><button class="primary">Sign in</button></form></div>`;
+    <div class="err">${esc(err)}</div><button class="primary">Sign in</button>
+    <p style="margin-top:16px"><a href="#" id="toTeam" style="color:var(--dim);font-size:13px">← Back to team leaderboard</a></p></form></div>`;
+  $('#toTeam').onclick = (e) => { e.preventDefault(); PAGE = 'team'; load(); };
   $('#lf').onsubmit = async (e) => {
     e.preventDefault();
     const r = await fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: $('#pw').value }) });
     if (!r.ok) return renderLogin('Wrong password');
-    boot();
+    PAGE = 'book'; boot();
   };
 }
 
 /* ---------- shell ---------- */
 function shell(inner) {
+  if (!ME) {
+    $('#app').innerHTML = `<header class="top"><div class="mark">CG</div><div class="brand">Capital <i>Gateway</i></div>
+      <nav class="nav"><button class="on">Team</button></nav>${DATA?.demo ? '<span class="demo">SAMPLE DATA</span>' : ''}<div class="sp"></div>
+      <button id="theme" class="theme" title="Light / dark">${theme() === 'light' ? '☾' : '☀'}</button>
+      <button id="ref" title="Pull latest">↻ Refresh</button><button id="in" class="primary">Sign in for my pay</button></header><main>${inner}</main>`;
+    $('#theme').onclick = () => { setTheme(theme() === 'light' ? 'dark' : 'light'); render(); };
+    $('#ref').onclick = () => load(false);
+    $('#in').onclick = () => renderLogin();
+    return;
+  }
   const owner = ME.role === 'owner';
   const reps = owner ? (ME.reps || []) : [];
   $('#app').innerHTML = `
@@ -253,7 +266,7 @@ function teamPage() {
   return `
   <section class="hero">
     <div class="rise" ${st(0)}><div class="eyebrow">Team leaderboard · ${label}</div>
-      <div class="big num">${short(t.funded)}<small>${t.deals} deals funded</small></div>
+      <div class="big num">${short(t.funded)}<small>${t.deals} deal${t.deals === 1 ? "" : "s"} funded</small></div>
       <div class="lede">Average deal ${money(t.avg)}</div></div>
     <div class="periods rise" ${st(1)}>${[['month', 'Month'], ['quarter', 'Quarter'], ['all', 'All time']].map(([k, l]) => `<button class="chip ${DATA.period === k ? 'on' : ''}" data-per="${k}">${l}</button>`).join('')}</div>
   </section>
@@ -426,14 +439,14 @@ document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDeal(
 async function load(refresh) {
   try {
     const qs = new URLSearchParams(); if (refresh) qs.set('refresh', '1');
-    if (PAGE === 'team') { qs.set('period', PERIOD); DATA = await api('/api/team?' + qs); }
+    if (PAGE === 'team') { qs.set('period', PERIOD); if (TEAMK) qs.set('k', TEAMK); DATA = await api('/api/team?' + qs); }
     else { if (AS) qs.set('as', AS); DATA = await api('/api/deals?' + qs); }
     render();
   } catch (e) { if (e.message !== 'login') $('#app').innerHTML = `<div class="login"><div class="empty">Couldn't load from GHL: ${esc(e.message)}</div></div>`; }
 }
 async function boot() {
   ME = await fetch('/api/me').then((r) => r.json()).catch(() => null);
-  if (!ME) return renderLogin();
+  if (!ME || URLQ.get('page') === 'team') PAGE = 'team';
   load();
 }
 boot();
