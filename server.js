@@ -174,6 +174,51 @@ function repView(data, agent) {
   return { view: 'rep', agent, generatedAt: data.generatedAt, demo: DEMO, totals, deals: mine };
 }
 
+// Team leaderboard — everyone can see it. Pay $ only for owner, or for all if TEAM_SHOW_PAY=true.
+const TEAM_SHOW_PAY = String(process.env.TEAM_SHOW_PAY || '').toLowerCase() === 'true';
+function inPeriod(dateStr, period, now = new Date()) {
+  if (period === 'all' || !dateStr) return period === 'all';
+  const d = new Date(dateStr + 'T12:00:00Z');
+  if (period === 'month') return d.getUTCFullYear() === now.getUTCFullYear() && d.getUTCMonth() === now.getUTCMonth();
+  if (period === 'quarter') return d.getUTCFullYear() === now.getUTCFullYear() && Math.floor(d.getUTCMonth() / 3) === Math.floor(now.getUTCMonth() / 3);
+  return true;
+}
+function teamView(data, period, showPay, me) {
+  const deals = data.deals.filter((d) => inPeriod(d.calc.fundedDate, period));
+  const reps = {};
+  const add = (agent, role, d, amount) => {
+    if (!agent) return;
+    const r = (reps[agent] = reps[agent] || { agent, deals: 0, opened: 0, closed: 0, funded: 0, earned: 0, ids: new Set() });
+    role === 'Opener' ? r.opened++ : r.closed++;
+    if (!r.ids.has(d.id)) { r.ids.add(d.id); r.deals++; r.funded = round2(r.funded + (d.calc.funded || 0)); }
+    r.earned = round2(r.earned + (amount || 0));
+  };
+  for (const d of deals) {
+    if (d.calc.opener) add(d.calc.opener.agent, 'Opener', d, d.calc.opener.amount);
+    for (const c of d.calc.closers) add(c.agent, 'Closer', d, c.amount);
+  }
+  const board = Object.values(reps)
+    .map(({ ids, earned, ...r }) => ({ ...r, ...(showPay || r.agent === me ? { earned } : {}) }))
+    .sort((a, b) => b.funded - a.funded || b.deals - a.deals);
+  const feed = deals.slice(0, 8).map((d) => ({
+    name: d.name, funded: d.calc.funded, date: d.calc.fundedDate,
+    reps: [d.calc.opener?.agent, ...d.calc.closers.map((c) => c.agent)].filter(Boolean),
+  }));
+  return {
+    view: 'team', period, showPay, me, generatedAt: data.generatedAt, demo: DEMO,
+    totals: { deals: deals.length, funded: sum(deals, (d) => d.calc.funded), avg: deals.length ? round2(sum(deals, (d) => d.calc.funded) / deals.length) : 0 },
+    board, feed,
+  };
+}
+app.get('/api/team', needUser, async (req, res) => {
+  try {
+    const period = ['month', 'quarter', 'all'].includes(req.query.period) ? req.query.period : 'month';
+    const data = await build(req.query.refresh === '1');
+    const owner = req.user.role === 'owner';
+    res.json(teamView(data, period, owner || TEAM_SHOW_PAY, owner ? null : req.user.name));
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
 app.get('/api/deals', needUser, async (req, res) => {
   try {
     const data = await build(req.query.refresh === '1');

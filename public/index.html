@@ -139,8 +139,25 @@ tbody tr:last-child td{border-bottom:none}
 .login button{width:100%;border-radius:12px;padding:12px}
 .err{color:var(--bad);font-size:13px;min-height:18px}
 
+.nav{display:flex;gap:4px;margin-left:18px}
+.nav button{border:none;border-radius:8px;padding:7px 12px;color:var(--dim);font-weight:500}
+.nav button.on{color:var(--ivory);background:var(--panel2);box-shadow:inset 0 -2px 0 var(--brass)}
+.periods{display:flex;gap:6px;justify-content:flex-end;align-self:end}
+.podium{display:grid;grid-template-columns:1fr 1.15fr 1fr;gap:16px;align-items:end;margin-bottom:26px}
+.pod{text-align:center;position:relative}
+.pod .place{font-family:var(--serif);font-style:italic;font-size:46px;line-height:1;color:var(--brass)}
+.pod .pname{font-weight:600;font-size:16px;margin:6px 0 2px}
+.pod .pfund{font-size:24px}
+.pod .plinth{margin-top:14px;border:1px solid var(--line);border-bottom:none;border-radius:14px 14px 0 0;background:linear-gradient(180deg,var(--panel2),var(--panel))}
+.p1 .plinth{height:120px;border-color:var(--brass);background:linear-gradient(180deg,rgba(212,168,75,.18),var(--panel))}
+.p2 .plinth{height:80px}.p3 .plinth{height:56px}
+.p1 .place{font-size:64px;color:var(--brass2)}.p1 .pfund{font-size:30px;color:var(--brass2)}
+.pod.me .pname::after{content:" · you";color:var(--brass);font-weight:500}
+.rank{font-family:var(--serif);font-style:italic;color:var(--brass);font-size:20px}
+tr.mine td{background:rgba(212,168,75,.06)}
+.you{font-size:10px;letter-spacing:.12em;font-weight:700;color:var(--ink);background:var(--brass);padding:2px 6px;border-radius:4px;margin-left:6px}
 @media (max-width:1100px){.cols{grid-template-columns:1fr}.hero{grid-template-columns:1fr}.strip{grid-template-columns:repeat(2,1fr)}.strip>div{border-bottom:1px solid var(--line)}}
-@media (max-width:640px){.top,main{padding-left:16px;padding-right:16px}.big{font-size:56px}.ph input{width:100%}.who{display:none}}
+@media (max-width:640px){.nav{margin-left:0}.podium{gap:8px}.pod .pfund{font-size:18px}.top,main{padding-left:16px;padding-right:16px}.big{font-size:56px}.ph input{width:100%}.who{display:none}}
 </style>
 </head>
 <body>
@@ -156,7 +173,7 @@ const date = (s) => s ? new Date(s + 'T12:00:00').toLocaleDateString('en-US', { 
 const tag = (s) => `<span class="tag t-${s.replace(/\s/g, '')}">${esc(s)}</span>`;
 const st = (i) => `style="animation-delay:${i * 60}ms"`;
 
-let ME = null, DATA = null, AS = '', FILTER = 'all', Q = '', OPEN = null;
+let ME = null, DATA = null, AS = '', FILTER = 'all', Q = '', OPEN = null, PAGE = 'book', PERIOD = 'month';
 
 async function api(url, opt) {
   const r = await fetch(url, { headers: { 'Content-Type': 'application/json' }, ...opt });
@@ -187,9 +204,10 @@ function shell(inner) {
   $('#app').innerHTML = `
     <header class="top">
       <div class="mark">CG</div><div class="brand">Capital <i>Gateway</i></div>
+      <nav class="nav"><button data-p="book" class="${PAGE === 'book' ? 'on' : ''}">${owner ? 'Book' : 'My pay'}</button><button data-p="team" class="${PAGE === 'team' ? 'on' : ''}">Team</button></nav>
       ${DATA?.demo ? '<span class="demo">SAMPLE DATA</span>' : ''}
       <div class="sp"></div>
-      ${owner ? `<div class="seg"><button data-v="" class="${AS ? '' : 'on'}">Owner</button><button data-v="rep" class="${AS ? 'on' : ''}">Rep view</button></div>
+      ${owner && PAGE === 'book' ? `<div class="seg"><button data-v="" class="${AS ? '' : 'on'}">Owner</button><button data-v="rep" class="${AS ? 'on' : ''}">Rep view</button></div>
         ${AS || reps.length ? `<select id="as" ${AS ? '' : 'hidden'}>${reps.map((r) => `<option ${r === AS ? 'selected' : ''}>${esc(r)}</option>`).join('')}</select>` : ''}` : ''}
       ${owner ? "" : `<span class="who">${esc(ME.name)}</span>`}
       <button id="ref" title="Pull latest from GHL">↻ Refresh</button>
@@ -199,6 +217,43 @@ function shell(inner) {
   $('#out').onclick = async () => { await fetch('/api/logout', { method: 'POST' }); ME = null; renderLogin(); };
   document.querySelectorAll('.seg button').forEach((b) => b.onclick = () => { AS = b.dataset.v ? (reps[0] || '') : ''; load(); });
   if ($('#as')) $('#as').onchange = (e) => { AS = e.target.value; load(); };
+  document.querySelectorAll('.nav button').forEach((b) => b.onclick = () => { PAGE = b.dataset.p; closeDeal(); load(); });
+}
+
+/* ---------- team ---------- */
+function teamPage() {
+  const t = DATA.totals, b = DATA.board;
+  const label = { month: 'This month', quarter: 'This quarter', all: 'All time' }[DATA.period];
+  const max = Math.max(1, ...b.map((r) => r.funded));
+  const pod = [b[1], b[0], b[2]];
+  const podium = b.length ? `<div class="podium">${pod.map((r, i) => r ? `<div class="pod p${[2, 1, 3][i]} rise ${r.agent === DATA.me ? 'me' : ''}" ${st(i + 1)}>
+      <div class="place">${[2, 1, 3][i]}</div><div class="pname">${esc(r.agent)}</div>
+      <div class="num pfund">${short(r.funded)}</div><div class="sub">${r.deals} deal${r.deals === 1 ? '' : 's'}${r.earned != null ? ' · ' + money(r.earned) : ''}</div>
+      <div class="plinth"></div></div>` : '<div></div>').join('')}</div>` : '';
+  return `
+  <section class="hero">
+    <div class="rise" ${st(0)}><div class="eyebrow">Team leaderboard · ${label}</div>
+      <div class="big num">${short(t.funded)}<small>${t.deals} deals funded</small></div>
+      <div class="lede">Average deal ${money(t.avg)}</div></div>
+    <div class="periods rise" ${st(1)}>${[['month', 'Month'], ['quarter', 'Quarter'], ['all', 'All time']].map(([k, l]) => `<button class="chip ${DATA.period === k ? 'on' : ''}" data-per="${k}">${l}</button>`).join('')}</div>
+  </section>
+  ${b.length ? podium : `<div class="panel empty rise">No funded deals ${label.toLowerCase()} yet. First one takes the top spot.</div>`}
+  ${b.length ? `<div class="cols">
+    <section class="panel rise" ${st(4)}>
+      <div class="ph"><h2>Standings</h2></div>
+      <div class="scroll"><table><thead><tr><th>#</th><th>Rep</th><th>Funded</th><th class="r">Deals</th><th class="r">Opened</th><th class="r">Closed</th>${DATA.showPay ? '<th class="r">Commission</th>' : ''}</tr></thead><tbody>
+      ${b.map((r, i) => `<tr class="${r.agent === DATA.me ? 'mine' : ''}" style="cursor:default">
+        <td><span class="rank">${i + 1}</span></td><td class="merch">${esc(r.agent)}${r.agent === DATA.me ? ' <span class="you">YOU</span>' : ''}</td>
+        <td><span class="num">${money(r.funded)}</span><div class="meter" style="width:220px"><i data-w="${r.funded / max * 100}" style="width:0;transition:width 1s .3s"></i></div></td>
+        <td class="r num">${r.deals}</td><td class="r num">${r.opened}</td><td class="r num">${r.closed}</td>
+        ${DATA.showPay ? `<td class="r num" style="color:var(--brass2)">${money(r.earned)}</td>` : ''}</tr>`).join('')}
+      </tbody></table></div>
+    </section>
+    <aside class="panel rise" ${st(5)}>
+      <div class="ph"><h2>Latest fundings</h2></div>
+      <div class="lb">${DATA.feed.map((f) => `<div class="rep"><div class="top1"><span class="name">${esc(f.name)}</span><span class="num" style="color:var(--brass2)">${short(f.funded)}</span></div>
+        <div class="meta">${date(f.date)} · ${f.reps.map(esc).join(', ') || 'No reps'}</div></div>`).join('')}</div>
+    </aside></div>` : ''}`;
 }
 
 /* ---------- owner ---------- */
@@ -297,7 +352,8 @@ function filtered(deals) {
   });
 }
 function render() {
-  shell(DATA.view === 'owner' ? ownerPage() : repPage());
+  shell(DATA.view === 'team' ? teamPage() : DATA.view === 'owner' ? ownerPage() : repPage());
+  document.querySelectorAll('[data-per]').forEach((b) => b.onclick = () => { PERIOD = b.dataset.per; load(); });
   requestAnimationFrame(() => document.querySelectorAll('[data-w]').forEach((el) => el.style.width = Math.max(0, Math.min(100, el.dataset.w)) + '%'));
   document.querySelectorAll('[data-f]').forEach((b) => b.onclick = () => { FILTER = b.dataset.f; render(); });
   const q = $('#q'); if (q) q.oninput = (e) => { Q = e.target.value; const pos = e.target.selectionStart; render(); const n = $('#q'); n.focus(); n.setSelectionRange(pos, pos); };
@@ -349,8 +405,10 @@ document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDeal(
 
 async function load(refresh) {
   try {
-    const qs = new URLSearchParams(); if (refresh) qs.set('refresh', '1'); if (AS) qs.set('as', AS);
-    DATA = await api('/api/deals?' + qs); render();
+    const qs = new URLSearchParams(); if (refresh) qs.set('refresh', '1');
+    if (PAGE === 'team') { qs.set('period', PERIOD); DATA = await api('/api/team?' + qs); }
+    else { if (AS) qs.set('as', AS); DATA = await api('/api/deals?' + qs); }
+    render();
   } catch (e) { if (e.message !== 'login') $('#app').innerHTML = `<div class="login"><div class="empty">Couldn't load from GHL: ${esc(e.message)}</div></div>`; }
 }
 async function boot() {

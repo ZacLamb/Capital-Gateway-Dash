@@ -17,6 +17,7 @@ Reads funded deals from the Capital Gateway GHL sub-account (`WUqaLeDuJ5H8kocqpi
    | `SESSION_SECRET` | any long random string (keeps people logged in across redeploys) |
    | `AUTO_WRITEBACK` | `true` (fills blank RTR / Payment / Commission $ / rep $ fields in GHL) |
    | `CACHE_SECONDS` | `120` |
+   | `TEAM_SHOW_PAY` | `false` (set `true` to show every rep's commission $ on the Team leaderboard) |
 5. Generate a domain and log in with a password. Owner sees the full book + a Rep view toggle; each rep sees only their own deals and cut. `/api/health` confirms all 24 fields were found.
 
 With no `GHL_TOKEN` (or `DEMO_MODE=true`) it runs on sample data — owner password `owner`, reps by first name (`aaron`, `steve`…).
