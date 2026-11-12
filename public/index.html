@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Capital Gateway · Deals & Commissions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f4f6f9; --panel:#fff; --ink:#0f1b2d; --muted:#5b6b82; --line:#e3e8ef;
+  --brand:#0b3d63; --brand2:#1b6fa8; --accent:#c9a227;
+  --good:#16804a; --good-bg:#e5f5ec; --warn:#a86400; --warn-bg:#fff2dc; --bad:#b42318; --bad-bg:#fde8e6; --info-bg:#e8f1fa;
+}
+*{box-sizing:border-box} html,body{margin:0}
+body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:14px}
+.num{font-family:'JetBrains Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums}
+header{background:var(--brand);color:#fff;padding:18px 28px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+header .logo{width:34px;height:34px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#e8c95a);display:grid;place-items:center;font-weight:700;color:var(--brand)}
+header h1{font-size:17px;margin:0;font-weight:600}
+header .sub{font-size:12px;opacity:.75}
+header .sp{flex:1}
+.badge-demo{background:var(--accent);color:var(--brand);font-weight:600;font-size:11px;padding:4px 8px;border-radius:999px}
+button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--ink);padding:7px 12px}
+header button{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.25);color:#fff}
+main{padding:22px 28px 60px;max-width:1500px;margin:0 auto}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:18px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.kpi .l{font-size:12px;color:var(--muted);font-weight:500}
+.kpi .v{font-size:22px;font-weight:600;margin-top:6px}
+.kpi .s{font-size:12px;color:var(--muted);margin-top:2px}
+.tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+.tab{background:transparent;border:none;padding:8px 14px;border-radius:8px;color:var(--muted);font-weight:500}
+.tab.on{background:var(--panel);color:var(--ink);box-shadow:0 0 0 1px var(--line)}
+.filters{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+input,select{font:inherit;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:auto}
+table{width:100%;border-collapse:collapse;min-width:1100px}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);background:#fafbfc;font-weight:600;white-space:nowrap}
+td{padding:11px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+td.r,th.r{text-align:right}
+tbody tr{cursor:pointer} tbody tr:hover{background:#f8fafc}
+.m{font-weight:600}.m small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px}
+.p-Performing{background:var(--good-bg);color:var(--good)}
+.p-SlowPay{background:var(--warn-bg);color:var(--warn)}
+.p-Default{background:var(--bad-bg);color:var(--bad)}
+.p-PaidOff{background:var(--info-bg);color:var(--brand2)}
+.bar{width:110px;height:7px;border-radius:9px;background:#e9edf3;overflow:hidden;display:inline-block;vertical-align:middle;margin-right:8px}
+.bar i{display:block;height:100%;background:var(--brand2)}
+.renew{font-size:11px;color:var(--good);font-weight:600;margin-left:4px}
+.warn{color:var(--warn);font-size:12px}
+/* drawer */
+.scrim{position:fixed;inset:0;background:rgba(15,27,45,.35);display:none}
+.drawer{position:fixed;top:0;right:0;height:100%;width:min(520px,100%);background:#fff;box-shadow:-10px 0 40px rgba(0,0,0,.15);transform:translateX(100%);transition:transform .2s;overflow:auto;padding:22px 24px}
+.open .scrim{display:block}.open .drawer{transform:none}
+.drawer h2{margin:0 0 2px;font-size:19px}
+.drawer h3{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:22px 0 8px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cell{background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.cell .l{font-size:11px;color:var(--muted)}.cell .v{font-weight:600;margin-top:3px}
+.splits td{padding:8px 6px;cursor:default}
+.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.primary{background:var(--brand);color:#fff;border-color:var(--brand)}
+.close{float:right}
+.empty{padding:40px;text-align:center;color:var(--muted)}
+.foot{color:var(--muted);font-size:12px;margin-top:10px}
+@media (max-width:640px){header,main{padding-left:16px;padding-right:16px}.filters{margin-left:0;width:100%}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">CG</div>
+  <div><h1>Capital Gateway — Deals &amp; Commissions</h1><div class="sub" id="sub">Loading…</div></div>
+  <span class="badge-demo" id="demo" hidden>SAMPLE DATA</span>
+  <div class="sp"></div>
+  <button id="refresh">↻ Refresh from GHL</button>
+</header>
+<main>
+  <section class="kpis" id="kpis"></section>
+  <div class="tabs">
+    <button class="tab on" data-tab="deals">Funded deals</button>
+    <button class="tab" data-tab="reps">Rep payouts</button>
+    <div class="filters">
+      <input id="q" placeholder="Search merchant…">
+      <select id="fAgent"><option value="">All agents</option></select>
+      <select id="fStatus"><option value="">All statuses</option><option>Performing</option><option>Slow Pay</option><option>Default</option><option>Paid Off</option></select>
+    </div>
+  </div>
+  <div class="card" id="view"></div>
+  <div class="foot" id="foot"></div>
+</main>
+<div id="dw"><div class="scrim" id="scrim"></div><aside class="drawer" id="drawer"></aside></div>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const money = (n, d = 0) => n == null ? '—' : '$' + Number(n).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
+const pct = (n) => n == null ? '—' : (Math.round(n * 10) / 10) + '%';
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const pill = (s) => `<span class="pill p-${s.replace(/\s/g, '')}">${esc(s)}</span>`;
+const fmtDate = (s) => s ? new Date(s + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
+let DATA = null, TAB = 'deals', OPEN = null;
+
+async function load(refresh) {
+  $('#sub').textContent = 'Loading…';
+  const r = await fetch('/api/deals' + (refresh ? '?refresh=1' : ''));
+  const j = await r.json();
+  if (!r.ok) { $('#view').innerHTML = `<div class="empty">Could not load from GHL: ${esc(j.error)}</div>`; $('#sub').textContent = 'Error'; return; }
+  set(j);
+}
+function set(j) {
+  DATA = j;
+  $('#demo').hidden = !j.demo;
+  $('#sub').textContent = `Updated ${new Date(j.generatedAt).toLocaleTimeString()} · ${j.totals.deals} funded deals`;
+  const agents = [...new Set(j.reps.map((r) => r.agent))].sort();
+  const cur = $('#fAgent').value;
+  $('#fAgent').innerHTML = '<option value="">All agents</option>' + agents.map((a) => `<option ${a === cur ? 'selected' : ''}>${esc(a)}</option>`).join('');
+  render();
+  if (OPEN) openDeal(OPEN);
+}
+function kpis() {
+  const t = DATA.totals;
+  const k = [
+    ['Total funded', money(t.funded), `${t.deals} deals · ${t.active} active`],
+    ['Total RTR', money(t.rtr), 'Payback owed to funders'],
+    ['Collected to date', money(t.collected), t.rtr ? Math.round(t.collected / t.rtr * 100) + '% of RTR' : ''],
+    ['Outstanding balance', money(t.outstanding), `${t.missed} missed payments · ${t.defaults} in default`],
+    ['Gross commission', money(t.commission), `Rep payouts ${money(t.repPayouts)}`],
+    ['House keeps', money(t.house), `${t.renewalEligible} deals renewal-eligible`],
+  ];
+  $('#kpis').innerHTML = k.map(([l, v, s]) => `<div class="kpi"><div class="l">${l}</div><div class="v num">${v}</div><div class="s">${s}</div></div>`).join('');
+}
+function filtered() {
+  const q = $('#q').value.toLowerCase(), a = $('#fAgent').value, s = $('#fStatus').value;
+  return DATA.deals.filter((d) => {
+    const c = d.calc;
+    if (q && !d.name.toLowerCase().includes(q)) return false;
+    if (s && c.status !== s) return false;
+    if (a && c.opener?.agent !== a && !c.closers.some((x) => x.agent === a)) return false;
+    return true;
+  });
+}
+function render() {
+  kpis();
+  document.querySelectorAll('.tab').forEach((b) => b.classList.toggle('on', b.dataset.tab === TAB));
+  if (TAB === 'deals') renderDeals(); else renderReps();
+}
+function renderDeals() {
+  const rows = filtered();
+  if (!rows.length) { $('#view').innerHTML = '<div class="empty">No funded deals match. Deals appear here once <b>Funded Amount</b> is filled on the opportunity.</div>'; return; }
+  $('#view').innerHTML = `<table><thead><tr>
+    <th>Merchant</th><th>Funded</th><th class="r">Amount</th><th class="r">Factor</th><th class="r">RTR</th>
+    <th>Terms</th><th class="r">Payment</th><th>Paid</th><th class="r">Balance</th><th>Status</th>
+    <th class="r">Commission</th><th>Opener / Closers</th></tr></thead><tbody>
+    ${rows.map((d) => { const c = d.calc; const p = Math.round(c.pctPaid * 100); return `<tr data-id="${d.id}">
+      <td class="m">${esc(d.name)}${c.warnings.length ? `<small class="warn">⚠ ${esc(c.warnings[0])}</small>` : `<small>${esc(d.stage || d.pipeline)}</small>`}</td>
+      <td>${fmtDate(c.fundedDate)}</td>
+      <td class="r num">${money(c.funded)}</td><td class="r num">${c.factor ?? '—'}</td><td class="r num">${money(c.rtr)}</td>
+      <td>${c.frequency || '—'} · ${c.termLength ?? '—'} ${esc(c.termUnit || '')}</td>
+      <td class="r num">${money(c.payment, 2)}</td>
+      <td><span class="bar"><i style="width:${p}%"></i></span><span class="num">${p}%</span>${c.renewalEligible && c.status !== 'Paid Off' ? '<span class="renew">RENEWAL</span>' : ''}<div style="font-size:12px;color:var(--muted)">${c.made}/${c.nPayments ?? '?'} pmts${c.missed ? ` · ${c.missed} missed` : ''}</div></td>
+      <td class="r num">${money(c.balance)}</td><td>${pill(c.status)}</td>
+      <td class="r num">${money(c.commission)}<div style="font-size:12px;color:var(--muted)">${c.commissionPct != null ? c.commissionPct + '%' : ''}</div></td>
+      <td>${esc(c.opener?.agent || '—')}<div style="font-size:12px;color:var(--muted)">${c.closers.map((x) => esc(x.agent)).join(', ') || '—'}</div></td>
+    </tr>`; }).join('')}</tbody></table>`;
+  document.querySelectorAll('tbody tr').forEach((tr) => tr.onclick = () => openDeal(tr.dataset.id));
+}
+function renderReps() {
+  const a = $('#fAgent').value;
+  const reps = DATA.reps.filter((r) => !a || r.agent === a);
+  if (!reps.length) { $('#view').innerHTML = '<div class="empty">No rep splits yet. Fill Opener / Closer fields on funded deals.</div>'; return; }
+  $('#view').innerHTML = `<table><thead><tr><th>Agent</th><th class="r">Deals opened</th><th class="r">Deals closed</th><th class="r">Funded credited</th><th class="r">Commission earned</th><th>Deals</th></tr></thead><tbody>
+    ${reps.map((r) => `<tr style="cursor:default"><td class="m">${esc(r.agent)}</td><td class="r num">${r.openerDeals}</td><td class="r num">${r.closerDeals}</td>
+      <td class="r num">${money(r.fundedCredited)}</td><td class="r num" style="font-weight:600">${money(r.earned, 2)}</td>
+      <td style="white-space:normal;font-size:12px;color:var(--muted)">${r.deals.map((d) => `${esc(d.name)} (${d.role}, ${money(d.amount, 2)})`).join(' · ')}</td></tr>`).join('')}
+  </tbody></table>`;
+}
+function openDeal(id) {
+  const d = DATA.deals.find((x) => x.id === id); if (!d) return;
+  OPEN = id; const c = d.calc;
+  const cell = (l, v) => `<div class="cell"><div class="l">${l}</div><div class="v num">${v}</div></div>`;
+  const splits = [c.opener && { role: 'Opener', ...c.opener }, ...c.closers.map((x) => ({ role: 'Closer ' + x.slot, ...x }))].filter(Boolean);
+  $('#drawer').innerHTML = `<button class="close" id="x">✕</button>
+    <h2>${esc(d.name)}</h2><div style="color:var(--muted)">${esc(d.pipeline)} ${d.stage ? '· ' + esc(d.stage) : ''}</div>
+    ${c.warnings.length ? `<p class="warn">⚠ ${c.warnings.map(esc).join(' · ')}</p>` : ''}
+    <h3>Deal terms</h3><div class="grid2">
+      ${cell('Funded amount', money(c.funded))}${cell('Funded date', fmtDate(c.fundedDate))}
+      ${cell('Factor rate', c.factor ?? '—')}${cell('RTR', money(c.rtr, 2))}
+      ${cell('Frequency', c.frequency || '—')}${cell('Term', `${c.termLength ?? '—'} ${esc(c.termUnit || '')}`)}
+      ${cell('Payment', money(c.payment, 2))}${cell('Total payments', c.nPayments ?? '—')}</div>
+    <h3>Payment tracking</h3><div class="grid2">
+      ${cell('Payments due to date', c.due)}${cell('Payments made', c.made)}
+      ${cell('Collected', money(c.collected, 2))}${cell('Balance remaining', money(c.balance, 2))}
+      ${cell('% paid in', Math.round(c.pctPaid * 100) + '%' + (c.renewalEligible && c.status !== 'Paid Off' ? ' · renewal-eligible' : ''))}${cell('Projected payoff', fmtDate(c.finalDate))}</div>
+    <div class="actions" style="margin-top:12px">
+      <span>Missed payments: <b class="num">${c.missed}</b></span>
+      <button data-m="1">+ Log missed / bounced</button><button data-m="-1" ${c.missed ? '' : 'disabled'}>− Undo</button>
+    </div>
+    <div class="actions" style="margin-top:10px"><span>Status</span>
+      <select id="st">${['Performing', 'Slow Pay', 'Default', 'Paid Off'].map((s) => `<option ${s === c.status ? 'selected' : ''}>${s}</option>`).join('')}</select>
+      <button class="primary" id="saveSt">Save status</button></div>
+    <h3>Commission</h3><div class="grid2">${cell('Commission %', c.commissionPct != null ? c.commissionPct + '% of funded' : '—')}${cell('Commission $', money(c.commission, 2))}</div>
+    <table class="splits" style="min-width:0;margin-top:10px"><thead><tr><th>Role</th><th>Agent</th><th class="r">% of comm.</th><th class="r">Payout</th></tr></thead><tbody>
+      ${splits.map((s) => `<tr><td>${s.role}</td><td>${esc(s.agent)}</td><td class="r num">${pct(s.pct)}</td><td class="r num">${money(s.amount, 2)}</td></tr>`).join('') || '<tr><td colspan="4" style="color:var(--muted)">No reps assigned</td></tr>'}
+      <tr><td colspan="2"><b>House</b></td><td class="r num">${pct(100 - c.splitPct)}</td><td class="r num"><b>${money(c.house, 2)}</b></td></tr>
+    </tbody></table>
+    <p style="font-size:12px;color:var(--muted);margin-top:18px">Edit terms on the opportunity in GHL — changes show here on the next refresh.</p>`;
+  $('#dw').classList.add('open');
+  $('#x').onclick = closeDeal;
+  document.querySelectorAll('[data-m]').forEach((b) => b.onclick = () => post(`/api/deals/${id}/missed`, { delta: Number(b.dataset.m) }));
+  $('#saveSt').onclick = () => post(`/api/deals/${id}/status`, { status: $('#st').value });
+}
+function closeDeal() { OPEN = null; $('#dw').classList.remove('open'); }
+async function post(url, body) {
+  const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  const j = await r.json(); if (!r.ok) return alert(j.error); set(j);
+}
+$('#scrim').onclick = closeDeal;
+$('#refresh').onclick = () => load(true);
+document.querySelectorAll('.tab').forEach((b) => b.onclick = () => { TAB = b.dataset.tab; render(); });
+['#q', '#fAgent', '#fStatus'].forEach((s) => $(s).oninput = render);
+load();
+</script>
+</body>
+</html>

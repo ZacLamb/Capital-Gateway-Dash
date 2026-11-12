@@ -1,0 +1,15 @@
+{
+  "name": "capital-gateway-dashboard",
+  "version": "1.0.0",
+  "description": "Commission & payment tracking dashboard for Capital Gateway (GHL opportunities)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test/calc.test.js"
+  },
+  "engines": { "node": ">=18" },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2"
+  }
+}
